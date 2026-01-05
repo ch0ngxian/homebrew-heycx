@@ -51,7 +51,7 @@ fi
 # Check for uncommitted changes
 check_uncommitted_changes
 
-# Confirm action
+# Show what will be done
 echo ""
 print_info "This will:"
 echo "  1. Fetch latest changes from remote"
@@ -59,12 +59,6 @@ echo "  2. Merge '$CURRENT_BRANCH' into 'master'"
 echo "  3. Merge 'master' into 'develop'"
 echo "  4. Push 'master' and 'develop' to remote"
 echo ""
-read -p "Do you want to continue? (y/N): " -n 1 -r
-echo ""
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    print_error "Aborted by user"
-    exit 1
-fi
 
 # Step 1: Fetch from remote
 print_info "Fetching from remote..."
@@ -114,26 +108,36 @@ print_info "Pushing master to remote..."
 git push origin master
 print_success "Pushed master"
 
+# Step 6.5: Trigger production deployment workflow
+print_info "Looking for production deployment workflow..."
+WORKFLOW=$(gh workflow list | grep -i "prod" | grep -i "deployment" | head -n 1 | awk '{print $1}')
+
+if [ -n "$WORKFLOW" ]; then
+    print_info "Found workflow: $WORKFLOW"
+    print_info "Triggering production deployment workflow on master..."
+    if gh workflow run "$WORKFLOW" --ref master; then
+        print_success "Production deployment workflow triggered"
+    else
+        print_error "Failed to trigger workflow, but continuing..."
+    fi
+else
+    print_info "No production deployment workflow found (looking for 'Prod' + 'Deployment' keywords)"
+    print_info "Skipping workflow trigger"
+fi
+
 print_info "Pushing develop to remote..."
 git push origin develop
 print_success "Pushed develop"
 
-# Optional: Delete hotfix branch
+# Delete hotfix branch
 echo ""
-read -p "Do you want to delete the local hotfix branch '$CURRENT_BRANCH'? (y/N): " -n 1 -r
-echo ""
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    git checkout master  # Ensure we're not on the branch we're deleting
-    git branch -d "$CURRENT_BRANCH"
-    print_success "Deleted local branch $CURRENT_BRANCH"
+print_info "Cleaning up hotfix branch..."
+git checkout master  # Ensure we're not on the branch we're deleting
+git branch -d "$CURRENT_BRANCH"
+print_success "Deleted local branch $CURRENT_BRANCH"
 
-    read -p "Do you want to delete the remote hotfix branch '$CURRENT_BRANCH'? (y/N): " -n 1 -r
-    echo ""
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        git push origin --delete "$CURRENT_BRANCH"
-        print_success "Deleted remote branch $CURRENT_BRANCH"
-    fi
-fi
+git push origin --delete "$CURRENT_BRANCH"
+print_success "Deleted remote branch $CURRENT_BRANCH"
 
 echo ""
 print_success "Hotfix workflow completed successfully!"
