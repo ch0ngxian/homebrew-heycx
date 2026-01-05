@@ -110,7 +110,7 @@ print_success "Pushed master"
 
 # Step 6.5: Trigger production deployment workflow
 print_info "Looking for production deployment workflow..."
-WORKFLOW=$(gh workflow list | grep -i "prod" | grep -i "deployment" | head -n 1 | awk '{print $1}')
+WORKFLOW=$(gh workflow list | grep -i "prod" | grep -i "deployment" | head -n 1 | awk '{sub(/[[:space:]]+(active|disabled|state).*/, ""); print}')
 
 if [ -n "$WORKFLOW" ]; then
     print_info "Found workflow: $WORKFLOW"
