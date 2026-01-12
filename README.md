@@ -66,6 +66,19 @@ $ heycx sync
 - Returns to original branch
 - Re-applies stashed changes
 
+### `heycx docker enter <name-part>`
+
+Enter a running Docker container by partial name match.
+
+```bash
+$ heycx docker enter api
+➜ Entering: my-api-container (abc123)
+```
+
+**What it does:**
+- Searches running containers for a name matching `<name-part>` (case-insensitive)
+- Opens an interactive shell session (tries zsh, then bash, then sh)
+
 ## Git Branching Model
 
 These commands assume a Git Flow-style workflow:
@@ -76,7 +89,8 @@ These commands assume a Git Flow-style workflow:
 
 ## Dependencies
 
-- **Git** - Required
+- **Git** - Required for hotfix and sync commands
+- **Docker** - Required for docker-enter command
 - **gh** (GitHub CLI) - Optional, used for triggering deployment workflows
 
 ## License

@@ -15,7 +15,9 @@ heycx
 ├── hotfix
 │   ├── start    # Prompts for name, creates hotfix/<name> from master
 │   └── finish   # Merges hotfix → master → develop
-└── sync         # Updates master & develop branches
+├── sync         # Updates master & develop branches
+└── docker
+    └── enter    # Enter a running Docker container by name
 ```
 
 The CLI is a single bash script (`heycx`) with subcommand routing.
@@ -61,9 +63,18 @@ heycx sync
 
 Updates master and develop from remote, returns to original branch.
 
+### Enter Docker Container
+
+```bash
+heycx docker enter <name-part>
+```
+
+Searches running containers for a partial name match and opens an interactive shell (tries zsh, then bash, then sh).
+
 ## Dependencies
 
-- **Git** - Required
+- **Git** - Required for hotfix and sync commands
+- **Docker** - Required for docker-enter command
 - **gh** (GitHub CLI) - Optional, used by `hotfix finish` to trigger deployment workflows
 
 ## Homebrew Distribution

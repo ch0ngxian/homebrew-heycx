@@ -594,6 +594,37 @@ cmd_sync() {
     print_info "Current branch: $(git rev-parse --abbrev-ref HEAD)"
 }
 
+cmd_docker_enter() {
+    local cname="$1"
+
+    if [ -z "$cname" ]; then
+        print_error "Usage: heycx docker enter <name-part>"
+        exit 1
+    fi
+
+    local result
+    result=$(docker ps --format "{{.ID}} {{.Names}}" | grep -i "$cname" | head -n 1)
+
+    if [ -z "$result" ]; then
+        print_error "No container matching: $cname"
+        exit 1
+    fi
+
+    local cid cname_full
+    read cid cname_full <<< "$result"
+
+    print_info "Entering: $cname_full ($cid)"
+
+    # Try shells in order: zsh -> bash -> sh
+    if docker exec "$cid" which zsh >/dev/null 2>&1; then
+        docker exec -it "$cid" zsh
+    elif docker exec "$cid" which bash >/dev/null 2>&1; then
+        docker exec -it "$cid" bash
+    else
+        docker exec -it "$cid" sh
+    fi
+}
+
 show_help() {
     echo -e "${CYAN}${BOLD}heycx${NC} - Opinionated utility toolkit v${VERSION}"
     echo ""
@@ -603,11 +634,13 @@ show_help() {
     echo "  ${BOLD}hotfix start${NC}     Start a new hotfix branch"
     echo "  ${BOLD}hotfix finish${NC}    Complete hotfix (merge to master & develop)"
     echo "  ${BOLD}sync${NC}             Update master & develop branches"
+    echo "  ${BOLD}docker enter${NC}     Enter a running Docker container by name"
     echo ""
     echo "Examples:"
     echo "  heycx hotfix start      # Prompts for name, creates hotfix/<name>"
     echo "  heycx hotfix finish     # Merges current hotfix branch"
     echo "  heycx sync              # Pull latest master & develop"
+    echo "  heycx docker enter api  # Enter container matching 'api'"
     echo ""
     echo "https://github.com/ch0ngxian/homebrew-heycx"
 }
@@ -624,6 +657,18 @@ show_hotfix_help() {
     echo "Examples:"
     echo "  heycx hotfix start      # Prompts for name, creates hotfix/<name>"
     echo "  heycx hotfix finish     # Merges current hotfix branch"
+}
+
+show_docker_help() {
+    echo -e "${CYAN}${BOLD}heycx docker${NC} - Docker utility commands"
+    echo ""
+    echo "Usage: heycx docker <subcommand> [args]"
+    echo ""
+    echo "Subcommands:"
+    echo "  ${BOLD}enter${NC}     Enter a running container by name"
+    echo ""
+    echo "Examples:"
+    echo "  heycx docker enter api  # Enter container matching 'api'"
 }
 
 # ============================================================================
@@ -646,6 +691,16 @@ case "${1:-}" in
         ;;
     sync)
         cmd_sync
+        ;;
+    docker)
+        case "${2:-}" in
+            enter)
+                cmd_docker_enter "$3"
+                ;;
+            *)
+                show_docker_help
+                ;;
+        esac
         ;;
     --version|-v)
         echo "heycx version $VERSION"
