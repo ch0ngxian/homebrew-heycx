@@ -2,7 +2,7 @@ class Heycx < Formula
   desc "Opinionated utility toolkit that makes developer life better"
   homepage "https://github.com/ch0ngxian/homebrew-heycx"
   url "https://github.com/ch0ngxian/homebrew-heycx/archive/refs/tags/v1.0.1.tar.gz"
-  sha256 "PLACEHOLDER"
+  sha256 "4eba1d3d27103a63fa93b3753f5f46253cff68c459334a25c078137eaa2b16e6"
   license "MIT"
   version "1.0.1"
 
