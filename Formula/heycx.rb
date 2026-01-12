@@ -8,7 +8,7 @@ class Heycx < Formula
 
   bottle do
     root_url "https://github.com/ch0ngxian/homebrew-heycx/releases/download/v1.0.1"
-    sha256 cellar: :any_skip_relocation, all: "5b633e6d8750f20a8863ef474bd457fdd357f1a8fdd14324cc59191dd04c0f55"
+    sha256 cellar: :any_skip_relocation, all: "94a20debd89ce11f773af14f23e1d2da4a9b6811fb9a6db607d8acde49d3dddd"
   end
 
   def install
