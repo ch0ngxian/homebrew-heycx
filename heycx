@@ -835,15 +835,8 @@ cmd_pr_create() {
         BASE_BRANCH="${BASE_BRANCH:-develop}"
     fi
 
-    # Generate default title from branch name
-    DEFAULT_TITLE=$(echo "$CURRENT_BRANCH" | sed 's|^[^/]*/||' | tr '-' ' ' | sed 's/.*/\u&/')
-
-    # Prompt for PR title
-    read -p "PR title ($DEFAULT_TITLE): " PR_TITLE
-    PR_TITLE="${PR_TITLE:-$DEFAULT_TITLE}"
-
-    # Prompt for PR body
-    read -p "PR description (optional): " PR_BODY
+    # Generate title from branch name
+    PR_TITLE=$(echo "$CURRENT_BRANCH" | sed 's|^[^/]*/||' | tr '-' ' ' | sed 's/.*/\u&/')
 
     print_info "Current branch: $CURRENT_BRANCH"
     echo ""
@@ -869,7 +862,7 @@ cmd_pr_create() {
 
     # Step 2: Create PR
     print_step "Creating pull request"
-    if run_cmd gh pr create --base "$BASE_BRANCH" --head "$CURRENT_BRANCH" --title "$PR_TITLE" --body "$PR_BODY"; then
+    if run_cmd gh pr create --base "$BASE_BRANCH" --head "$CURRENT_BRANCH" --title "$PR_TITLE"; then
         PR_URL=$(echo "$CMD_OUTPUT" | grep -oE 'https://github.com/[^ ]+' | head -1)
         PR_NUM=$(echo "$PR_URL" | grep -oE '[0-9]+$')
         if [ -n "$PR_NUM" ]; then
