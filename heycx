@@ -862,18 +862,17 @@ cmd_pr_create() {
 
     # Step 2: Create PR
     print_step "Creating pull request"
-    if run_cmd gh pr create --base "$BASE_BRANCH" --head "$CURRENT_BRANCH" --title "$PR_TITLE"; then
-        PR_URL=$(echo "$CMD_OUTPUT" | grep -oE 'https://github.com/[^ ]+' | head -1)
-        PR_NUM=$(echo "$PR_URL" | grep -oE '[0-9]+$')
-        if [ -n "$PR_NUM" ]; then
-            print_step_success "Created PR #$PR_NUM: $PR_TITLE"
-        else
-            print_step_success "Created PR: $PR_TITLE"
-        fi
-    else
+    PR_OUTPUT=$(gh pr create --base "$BASE_BRANCH" --head "$CURRENT_BRANCH" --title "$PR_TITLE" 2>&1) || {
         print_error "Failed to create pull request"
-        print_cmd_tail "$CMD_OUTPUT"
+        print_cmd_tail "$PR_OUTPUT"
         exit 1
+    }
+    PR_URL=$(echo "$PR_OUTPUT" | grep -oE 'https://github.com/[^ ]+' | head -1)
+    PR_NUM=$(echo "$PR_URL" | grep -oE '[0-9]+$')
+    if [ -n "$PR_NUM" ]; then
+        print_step_success "Created PR #$PR_NUM: $PR_TITLE"
+    else
+        print_step_success "Created PR: $PR_TITLE"
     fi
 
     # Step 3: Show PR details
