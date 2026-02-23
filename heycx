@@ -836,7 +836,7 @@ cmd_pr_create() {
     fi
 
     # Generate title from branch name
-    PR_TITLE=$(echo "$CURRENT_BRANCH" | sed 's|^[^/]*/||' | tr '-' ' ' | sed 's/.*/\u&/')
+    PR_TITLE=$(echo "$CURRENT_BRANCH" | sed 's|^[^/]*/||' | tr '-' ' ' | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
 
     print_info "Current branch: $CURRENT_BRANCH"
     echo ""
