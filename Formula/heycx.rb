@@ -1,10 +1,10 @@
 class Heycx < Formula
   desc "Opinionated utility toolkit that makes developer life better"
   homepage "https://github.com/ch0ngxian/homebrew-heycx"
-  url "https://github.com/ch0ngxian/homebrew-heycx/archive/refs/tags/v1.0.3.tar.gz"
-  sha256 "7e351ee543ab5431d91d745d3ccb4dfd5d70a296c6ab6847e2967d41a0526fdc"
+  url "https://github.com/ch0ngxian/homebrew-heycx/archive/refs/tags/v1.1.0.tar.gz"
+  sha256 "51d41de088c9195134ed5c087e8aeeb34afe073ae6e8791016d9dd88b0f4c506"
   license "MIT"
-  version "1.0.3"
+  version "1.1.0"
 
   def install
     bin.install "heycx"
@@ -16,8 +16,9 @@ class Heycx < Formula
 
       Commands:
         heycx hotfix start [name]  Start a new hotfix branch
-        heycx hotfix finish    Complete hotfix (merge to master & develop)
-        heycx sync             Update master & develop branches
+        heycx hotfix finish        Complete hotfix (merge to master & develop)
+        heycx pr create            Create a GitHub pull request
+        heycx sync                 Update master & develop branches
 
       Note: 'heycx hotfix finish' uses gh CLI for deployment triggers.
       Run 'gh auth login' if not already authenticated.
